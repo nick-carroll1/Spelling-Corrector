@@ -1,0 +1,53 @@
+# Create a function that returns the levenstein distance between two strings
+def lev(a, b):
+    if a == b:
+        return 0
+    elif (a,b) in levs:
+        return levs[(a,b)]
+    elif (b,a) in levs:
+        return levs[(b,a)]
+    elif len(a) == 0:
+        return lev(a, b[:-1]) + 1
+    elif len(b) == 0:
+        return lev(a[:-1], b) + 1
+    else:
+        distance = min(lev(a[:-1], b) + 1, lev(a, b[:-1]) + 1, lev(a[:-1], b[:-1]) + (a[-1] != b[-1]))
+        levs[(a,b)] = distance
+        return distance
+
+file = 'count_1w.txt'
+
+# Create an empty dictionary to store the levenstein distances
+levs = {}
+
+# Create a function that imports the dictionary file
+def importDictionary(file):
+    words = {}
+    with open(file, 'r') as f:
+        freqlist = f.readlines()
+        pass
+    for line in freqlist:
+        a, b = line.split('\t')
+        words[a] = int(b)
+        pass
+    return words
+
+# Create a function that returns the most likely word
+def corrector(word, dictionary):
+    candidates = {}
+    total = sum(dictionary.values())
+    p = .01
+    for key in dictionary:
+        if lev(word, key) <= 2:
+            candidates[key] = dictionary[key]/total*p**lev(word, key)
+            pass
+        pass
+    if candidates:
+        return max(candidates, key=candidates.get)
+    else:
+        return word
+
+# Test the function
+if __name__ == '__main__':
+  dict = importDictionary(file)
+  print(corrector("goggle", dict))
